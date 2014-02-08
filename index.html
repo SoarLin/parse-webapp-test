@@ -1,0 +1,130 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+
+  <title>My Parse App</title>
+  <meta name="description" content="My Parse App">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.2.16.min.js"></script>
+</head>
+
+<body>
+  <div id="fb-root"></div>
+<script>
+window.fbAsyncInit = function() {
+  Parse.FacebookUtils.init({
+    appId      : '118428908353950',
+    status     : true, // check login status
+    cookie     : true, // enable cookies to allow the server to access the session
+    xfbml      : true  // parse XFBML
+  });
+
+  // FB.Event.subscribe('auth.authResponseChange', function(response) {
+  //   if (response.status === 'connected') {
+  //     testAPI();
+  //   } else if (response.status === 'not_authorized') {
+  //     FB.login();
+  //   } else {
+  //     FB.login();
+  //   }
+  // });
+};
+
+// Load the SDK asynchronously
+(function(d){
+ var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+ if (d.getElementById(id)) {return;}
+ js = d.createElement('script'); js.id = id; js.async = true;
+ js.src = "//connect.facebook.net/zh_TW/all.js";
+ ref.parentNode.insertBefore(js, ref);
+}(document));
+
+function callFBLogin(){
+  Parse.FacebookUtils.logIn("user_likes,email", {
+    success: function(user) {
+      if (!user.existed()) {
+        alert("User signed up and logged in through Facebook!");
+      } else {
+        alert("User logged in through Facebook!");
+      }
+    },
+    error: function(user, error) {
+      alert("User cancelled the Facebook login or did not fully authorize.");
+    }
+  });
+}
+</script>
+
+<!--
+  Below we include the Login Button social plugin. This button uses the JavaScript SDK to
+  present a graphical Login button that triggers the FB.login() function when clicked. -->
+
+  <div id="main">
+    <button type="button" onclick="callFBLogin();">FB login</button>
+    <h1>You're ready to use Parse!</h1>
+
+    <p>Read the documentation and start building your JavaScript app:</p>
+
+    <ul>
+      <li><a href="https://www.parse.com/docs/js_guide">Parse JavaScript Guide</a></li>
+      <li><a href="https://www.parse.com/docs/js">Parse JavaScript API Documentation</a></li>
+    </ul>
+
+    <div style="display:none" class="error">
+      Looks like there was a problem saving the test object. Make sure you've set your application ID and javascript key correctly in the call to <code>Parse.initialize</code> in this file.
+    </div>
+
+    <div style="display:none" class="success">
+      <p>We've also just created your first object using the following code:</p>
+      
+        <code>
+          var TestObject = Parse.Object.extend("TestObject");<br/>
+          var testObject = new TestObject();<br/>
+          testObject.save({foo: "bar"});
+        </code>
+    </div>
+  </div>
+
+<script type="text/javascript">
+//Parse.initialize("APPLICATION_ID", "JAVASCRIPT_KEY");
+Parse.initialize("92np9gi42G6BR1Q8tB2gj7iEfVyVyclLfDhQxFQb", "aoPqbUxtFSMPXiqE5LnyKqI6qnYECsqQt9hnvmG7");
+
+function TestObject(){
+  var TestObject = Parse.Object.extend("TestObject");
+  var testObject = new TestObject();
+    testObject.save({foo: "bar"}, {
+    success: function(object) {
+      $(".success").show();
+    },
+    error: function(model, error) {
+      $(".error").show();
+    }
+  });  
+}
+
+function addFirstUser(){
+  var user = new Parse.User();
+  user.set("username", "soar");
+  user.set("password", "basara");
+  user.set("email", "soar@stco.tw");
+    
+  // other fields can be set just like with Parse.Object
+  user.set("phone", "0910-387-918");
+    
+  user.signUp(null, {
+    success: function(user) {
+      // Hooray! Let them use the app now.
+    },
+    error: function(user, error) {
+      // Show the error message somewhere and let the user try again.
+      alert("Error: " + error.code + " " + error.message);
+    }
+  });
+}
+</script>
+</body>
+
+</html>
