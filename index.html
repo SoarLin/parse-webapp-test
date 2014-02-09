@@ -24,13 +24,15 @@ window.fbAsyncInit = function() {
 
   // FB.Event.subscribe('auth.authResponseChange', function(response) {
   //   if (response.status === 'connected') {
-  //     testAPI();
+  //     alert("authResponseChange, you are authorized from facebook");
   //   } else if (response.status === 'not_authorized') {
-  //     FB.login();
+  //     alert("authResponseChange, you are not authorized");
   //   } else {
-  //     FB.login();
+  //     alert("you need to login and authoriez");
   //   }
   // });
+
+  checkFBLoginStatus();
 };
 
 // Load the SDK asynchronously
@@ -43,18 +45,64 @@ window.fbAsyncInit = function() {
 }(document));
 
 function callFBLogin(){
-  Parse.FacebookUtils.logIn("user_likes,email", {
+  Parse.FacebookUtils.logIn("user_likes,email,read_stream,user_birthday,publish_stream", {
     success: function(user) {
       if (!user.existed()) {
         alert("User signed up and logged in through Facebook!");
       } else {
         alert("User logged in through Facebook!");
       }
+      getUserInfo();
     },
     error: function(user, error) {
       alert("User cancelled the Facebook login or did not fully authorize.");
     }
   });
+}
+
+function callFBLogout(){
+  FB.logout(function(response) {
+    // user logout fb.
+  });
+  showLogin();
+}
+
+function getUserInfo(){
+  FB.api(
+    "/me",
+    function (response) {
+      if (response && !response.error) {
+        //alert("使用者 " + response.name + ",ID = " + response.id);
+      }
+    }
+  );
+}
+
+function checkFBLoginStatus(){
+  FB.getLoginStatus(function(response) {
+    if (response.status === 'connected') {
+      var uid = response.authResponse.userID;
+      var accessToken = response.authResponse.accessToken;
+      showLogout();
+      getUserInfo();
+    } else if (response.status === 'not_authorized') {
+      // the user is logged in to Facebook, 
+      // but has not authenticated your app
+      showLogin();
+    } else {
+      // the user isn't logged in to Facebook.
+      showLogin();
+    }
+  });
+}
+
+function showLogin(){
+  $("#loginBtn").show();
+  $("#logoutBtn").hide();
+}
+function showLogout(){
+  $("#loginBtn").hide();
+  $("#logoutBtn").show();
 }
 </script>
 
@@ -63,7 +111,10 @@ function callFBLogin(){
   present a graphical Login button that triggers the FB.login() function when clicked. -->
 
   <div id="main">
-    <button type="button" onclick="callFBLogin();">FB login</button>
+    <button id="loginBtn" type="button" onclick="callFBLogin();" style="display:none;">FB login</button>
+    <button id="logoutBtn" type="button" onclick="callFBLogout();" style="display:none;">FB logout</button>
+    <div id="user_id"><%= Parse.User.current().get("username") %></div>
+    <div id="user_name"></div>
     <h1>You're ready to use Parse!</h1>
 
     <p>Read the documentation and start building your JavaScript app:</p>
@@ -72,6 +123,8 @@ function callFBLogin(){
       <li><a href="https://www.parse.com/docs/js_guide">Parse JavaScript Guide</a></li>
       <li><a href="https://www.parse.com/docs/js">Parse JavaScript API Documentation</a></li>
     </ul>
+
+    <button type="button" onclick="getTestObject(TestObject)">getTestObject</button>
 
     <div style="display:none" class="error">
       Looks like there was a problem saving the test object. Make sure you've set your application ID and javascript key correctly in the call to <code>Parse.initialize</code> in this file.
@@ -86,23 +139,54 @@ function callFBLogin(){
           testObject.save({foo: "bar"});
         </code>
     </div>
+    <div style="display:none" class="object">
+
+    </div>
   </div>
 
 <script type="text/javascript">
 //Parse.initialize("APPLICATION_ID", "JAVASCRIPT_KEY");
 Parse.initialize("92np9gi42G6BR1Q8tB2gj7iEfVyVyclLfDhQxFQb", "aoPqbUxtFSMPXiqE5LnyKqI6qnYECsqQt9hnvmG7");
 
-function TestObject(){
-  var TestObject = Parse.Object.extend("TestObject");
-  var testObject = new TestObject();
-    testObject.save({foo: "bar"}, {
+var TestObject = Parse.Object.extend("TestObject");
+var testObject = new TestObject();
+
+//saveTestObject(testObject);
+
+function saveTestObject(testObject){  
+  testObject.save({
+    foo: "bar",
+    name: "testObject1",
+    content: "I am test content",
+    debug: false
+  }, {
     success: function(object) {
+      alert(object.id);
       $(".success").show();
     },
     error: function(model, error) {
       $(".error").show();
     }
   });  
+}
+
+function getTestObject(TestObject){
+  var query = new Parse.Query(TestObject);
+  query.get("tk751YSKZN",{
+    success: function(testObject){
+      var content = testObject.get("content");
+      var name = testObject.get("name");
+      var foo = testObject.get("foo");
+      htmlString = "<ul><li>contetn : " + content + "</li>"+
+                  "<li>name : " + name + "</li>" +
+                  "<li>foo : " + foo + "</li></ul>";
+      $(".object").html(htmlString);
+      $(".object").show();
+    },
+    error: function(object, error){
+
+    }
+  });
 }
 
 function addFirstUser(){
