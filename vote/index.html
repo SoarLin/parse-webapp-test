@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <title>辦公地點投票</title>
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
+<script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+<script src="js/app.js"></script>
+</head>
+<body ng-app="LocationVote">
+  <div ng-controller="VoteController as voteCtrl">
+    <table class="table ">
+      <thead>
+        <tr>
+          <td>連結</td>
+          <td>租金</td>
+          <td>交通</td>
+          <td>傢俱</td>
+          <td>登記</td>
+          <td>得分</td>
+          <td>投票</td>
+        </tr>
+      </thead>
+      <tbody ng-repeat="room in voteCtrl.products">
+        <tr>
+          <td><a href="{{room.link}}" target="_blank">link</a></td>
+          <td>{{room.cost}}</td>
+          <td>{{room.traffic}}</td>
+          <td>
+            <span ng-show="room.bed">有</span>
+            <span ng-show="!room.bed">無</span>
+          </td>
+          <td>
+            {{voteCtrl.canRegister(room.register)}}
+          </td>
+          <td>{{room.points}}</td>
+          <td>
+            <form name="voteForm" ng-submit="voteCtrl.countPoints(vote, room)">
+              <input type="number" ng-model="vote" style="width:30px">
+              <button type="submit" class="btn btn-xs btn-default" style="margin-top:-10px;">vote</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

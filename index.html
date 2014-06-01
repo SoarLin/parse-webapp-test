@@ -86,7 +86,7 @@ function checkFBLoginStatus(){
       showLogout();
       getUserInfo();
     } else if (response.status === 'not_authorized') {
-      // the user is logged in to Facebook, 
+      // the user is logged in to Facebook,
       // but has not authenticated your app
       showLogin();
     } else {
@@ -123,8 +123,10 @@ function showLogout(){
       <li><a href="https://www.parse.com/docs/js_guide">Parse JavaScript Guide</a></li>
       <li><a href="https://www.parse.com/docs/js">Parse JavaScript API Documentation</a></li>
     </ul>
-
-    <button type="button" onclick="getTestObject(TestObject)">getTestObject</button>
+    <input type="file" id="profilePhotoFileUpload">
+    <button type="button" onclick="saveTestObject()">saveTestObject</button>
+    <button type="button" onclick="getTestObject()">getTestObject</button>
+    <button type="button" onclick="updateTestObject()">updateTestObject</button>
 
     <div style="display:none" class="error">
       Looks like there was a problem saving the test object. Make sure you've set your application ID and javascript key correctly in the call to <code>Parse.initialize</code> in this file.
@@ -132,7 +134,7 @@ function showLogout(){
 
     <div style="display:none" class="success">
       <p>We've also just created your first object using the following code:</p>
-      
+
         <code>
           var TestObject = Parse.Object.extend("TestObject");<br/>
           var testObject = new TestObject();<br/>
@@ -148,15 +150,31 @@ function showLogout(){
 //Parse.initialize("APPLICATION_ID", "JAVASCRIPT_KEY");
 Parse.initialize("92np9gi42G6BR1Q8tB2gj7iEfVyVyclLfDhQxFQb", "aoPqbUxtFSMPXiqE5LnyKqI6qnYECsqQt9hnvmG7");
 
-var TestObject = Parse.Object.extend("TestObject");
-var testObject = new TestObject();
+var fileUploadControl = $("#profilePhotoFileUpload")[0];
+if (fileUploadControl.files.length > 0) {
+  var file = fileUploadControl.files[0];
+  var name = file.name;
+
+  var parseFile = new Parse.File(name, file);
+  parseFile.save().then(function() {
+    // The file has been saved to Parse.
+    alert("save upload file on Parse.com server");
+  }, function(error) {
+    // The file either could not be read, or could not be saved to Parse.
+    alert("save upload file error!!"+error.info);
+  });
+}
+
+//var TestObject = Parse.Object.extend("TestObject");
 
 //saveTestObject(testObject);
 
-function saveTestObject(testObject){  
+function saveTestObject(){
+  var TestObject = Parse.Object.extend("TestObject");
+  var testObject = new TestObject();
   testObject.save({
-    foo: "bar",
-    name: "testObject1",
+    foo: 3,
+    name: "objectName",
     content: "I am test content",
     debug: false
   }, {
@@ -167,21 +185,15 @@ function saveTestObject(testObject){
     error: function(model, error) {
       $(".error").show();
     }
-  });  
+  });
 }
 
-function getTestObject(TestObject){
+function getTestObject(){
+  var TestObject = Parse.Object.extend("TestObject");
   var query = new Parse.Query(TestObject);
   query.get("tk751YSKZN",{
     success: function(testObject){
-      var content = testObject.get("content");
-      var name = testObject.get("name");
-      var foo = testObject.get("foo");
-      htmlString = "<ul><li>contetn : " + content + "</li>"+
-                  "<li>name : " + name + "</li>" +
-                  "<li>foo : " + foo + "</li></ul>";
-      $(".object").html(htmlString);
-      $(".object").show();
+      displayObject(testObject);
     },
     error: function(object, error){
 
@@ -189,15 +201,43 @@ function getTestObject(TestObject){
   });
 }
 
+function updateTestObject(){
+  var TestObject = Parse.Object.extend("TestObject");
+  var query = new Parse.Query(TestObject);
+  query.get("tk751YSKZN",{
+    success: function(testObject){
+      testObject.increment("foo");
+      //testObject.add("foo",3);
+      //testObject.addUnique("foo",4);
+      testObject.save();
+      displayObject(testObject);
+    },
+    error: function(object, error){
+
+    }
+  });
+}
+
+function displayObject(testObject){
+  var content = testObject.get("content");
+  var name = testObject.get("name");
+  var foo = testObject.get("foo");
+  htmlString = "<ul><li>contetn : " + content + "</li>"+
+              "<li>name : " + name + "</li>" +
+              "<li>foo : " + foo + "</li></ul>";
+  $(".object").html(htmlString);
+  $(".object").show();
+}
+
 function addFirstUser(){
   var user = new Parse.User();
   user.set("username", "soar");
   user.set("password", "basara");
   user.set("email", "soar@stco.tw");
-    
+
   // other fields can be set just like with Parse.Object
   user.set("phone", "0910-387-918");
-    
+
   user.signUp(null, {
     success: function(user) {
       // Hooray! Let them use the app now.
