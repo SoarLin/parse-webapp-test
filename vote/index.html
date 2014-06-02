@@ -8,44 +8,86 @@
 <link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
 <script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.2.18.min.js"></script>
 <script src="js/app.js"></script>
 </head>
 <body ng-app="LocationVote">
-  <div ng-controller="VoteController as voteCtrl">
-    <table class="table ">
-      <thead>
-        <tr>
-          <td>連結</td>
-          <td>租金</td>
-          <td>交通</td>
-          <td>傢俱</td>
-          <td>登記</td>
-          <td>得分</td>
-          <td>投票</td>
-        </tr>
-      </thead>
-      <tbody ng-repeat="room in voteCtrl.products">
-        <tr>
-          <td><a href="{{room.link}}" target="_blank">link</a></td>
-          <td>{{room.cost}}</td>
-          <td>{{room.traffic}}</td>
-          <td>
-            <span ng-show="room.bed">有</span>
-            <span ng-show="!room.bed">無</span>
-          </td>
-          <td>
-            {{voteCtrl.canRegister(room.register)}}
-          </td>
-          <td>{{room.points}}</td>
-          <td>
-            <form name="voteForm" ng-submit="voteCtrl.countPoints(vote, room)">
-              <input type="number" ng-model="vote" style="width:30px">
-              <button type="submit" class="btn btn-xs btn-default" style="margin-top:-10px;">vote</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="container" ng-controller="VoteController as voteCtrl">
+    <div id="RoomTable">
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <td>連結</td>
+            <td>租金</td>
+            <td>交通</td>
+            <td>傢俱</td>
+            <td>登記</td>
+            <td>得分</td>
+            <td>投票</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="room in voteCtrl.rooms">
+            <td><a href="{{room.link}}" target="_blank">link</a></td>
+            <td>{{room.cost}}</td>
+            <td>{{room.traffic}}</td>
+            <td>
+              <span ng-show="room.bed === 'true'">有</span>
+              <span ng-show="room.bed === 'false'">無</span>
+            </td>
+            <td>
+              {{voteCtrl.canRegister(room.register)}}
+            </td>
+            <td>{{room.points}}</td>
+            <td>
+              <form name="voteForm" ng-submit="voteCtrl.countPoints(vote, room)" style="margin-bottom: 0px;">
+                <input type="number" ng-model="vote" style="width:30px">
+                <button type="submit" class="btn btn-xs btn-default" style="margin-top:-10px;">vote</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <div id="AddNewRoom" >
+      <form name="newLocationForm" ng-controller="AddRoomController as addRoomCtrl"
+                                  ng-submit="addRoomCtrl.addNewRoom(voteCtrl.rooms)">
+        <label for="link">網址連結：</label>
+        <input type="url" ng-model="addRoomCtrl.newRoom.link" id="link" placeholder="link">
+
+        <label for="cost">租金：</label>
+        <input type="number" ng-model="addRoomCtrl.newRoom.cost" id="cost" placeholder="number">
+
+        <label for="traffic" class="col-xs-2 control-label">交通：</label>
+        <input type="text" ng-model="addRoomCtrl.newRoom.traffic" id="traffic" placeholder="哪個捷運站附近">
+
+        <label>傢俱：</label>
+        <div class="radio">
+          <label class="radio-inline">
+            <input type="radio" id="bed1" ng-model="addRoomCtrl.newRoom.bed" value="true">有</label>
+          <label class="radio-inline">
+            <input type="radio" id="bed1" ng-model="addRoomCtrl.newRoom.bed" value="false">沒有</label>
+        </div>
+
+        <label>登記：</label>
+        <div>
+          <label class="radio-inline">
+            <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="true">可以</label>
+          <label class="radio-inline">
+            <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="false">不行</label>
+          <label class="radio-inline">
+            <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="undefined">未知</label>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-sm btn-success">確認新增</button>
+      </form>
+    </div>
   </div>
+
+<script type="text/javascript">
+
+</script>
 </body>
 </html>
