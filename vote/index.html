@@ -4,11 +4,12 @@
   <meta charset="utf-8">
   <title>辦公地點投票</title>
 <script src="http://code.jquery.com/jquery.min.js"></script>
-<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
-<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
-<script src="http://getbootstrap.com/2.3.2/assets/js/bootstrap.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
 <script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.2.18.min.js"></script>
 <script src="js/app.js"></script>
 </head>
@@ -19,11 +20,11 @@
         <thead>
           <tr>
             <td>連結</td>
-            <td><button type="button" class="btn btn-sm btn-default" ng-click="changeOrder('cost')">租金</button></td>
-            <td>交通</td>
+            <td><button type="button" class="btn btn-xs btn-default" ng-click="changeOrder('cost')">租金</button></td>
             <td>傢俱</td>
             <td>登記</td>
-            <td><button type="button" class="btn btn-sm btn-default" ng-click="changeOrder('points')">得分</button></td>
+            <td><button type="button" class="btn btn-xs btn-default" ng-click="changeOrder('points')">得分</button></td>
+            <td>交通</td>
             <td>投票</td>
           </tr>
         </thead>
@@ -32,7 +33,6 @@
           <tr ng-repeat="room in voteCtrl.rooms | orderBy:orderProp">
             <td><a href="{{room.link}}" target="_blank">link</a></td>
             <td>{{room.cost}}</td>
-            <td>{{room.traffic}}</td>
             <td>
               <span ng-show="room.bed === 'true'">有</span>
               <span ng-show="room.bed === 'false'">無</span>
@@ -42,9 +42,17 @@
             </td>
             <td>{{room.points}}</td>
             <td>
+              <span id="showTraffic_{{room.objectId}}" ng-dblclick="voteCtrl.showEditTraffic(room);">{{room.traffic}}</span>
+              <div id="editTraffic_{{room.objectId}}" style="display:none;">
+                <input type="text" ng-model="traffic" value="{{room.traffic}}" class="form-control">
+                <button type="button" ng-click="voteCtrl.editTraffic(room, traffic);" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-ok"></span></button>
+              </div>
+            </td>
+            <td>
               <form name="voteForm" ng-submit="voteCtrl.countPoints(vote, room)" style="margin-bottom: 0px;">
-                <input type="number" ng-model="vote" style="width:30px" min=0 max=10>
-                <button type="submit" class="btn btn-xs btn-default" style="margin-top:-10px;">vote</button>
+                <input type="number" ng-model="vote" style="width:30px;margin-bottom:0" min=0 max=10>
+                <button type="submit" class="btn btn-xs btn-default">vote</button>
+                <button type="button" class="btn btn-xs btn-default" ng-click="voteCtrl.delOffice(room.link)"><span class="glyphicon glyphicon-trash"></span></button>
               </form>
             </td>
           </tr>
@@ -52,38 +60,60 @@
       </table>
     </div>
     <hr>
-    <div id="AddNewRoom" >
-      <form name="newLocationForm" ng-controller="AddRoomController as addRoomCtrl"
-                                  ng-submit="addRoomCtrl.addNewRoom(voteCtrl.rooms)">
-        <label for="link">網址連結：</label>
-        <input type="url" ng-model="addRoomCtrl.newRoom.link" id="link" placeholder="link">
-
-        <label for="cost">租金：</label>
-        <input type="number" ng-model="addRoomCtrl.newRoom.cost" id="cost" placeholder="number">
-
-        <label for="traffic" class="col-xs-2 control-label">交通：</label>
-        <input type="text" ng-model="addRoomCtrl.newRoom.traffic" id="traffic" placeholder="哪個捷運站附近">
-
-        <label>傢俱：</label>
-        <div class="radio">
-          <label class="radio-inline">
-            <input type="radio" id="bed1" ng-model="addRoomCtrl.newRoom.bed" value="true">有</label>
-          <label class="radio-inline">
-            <input type="radio" id="bed1" ng-model="addRoomCtrl.newRoom.bed" value="false">沒有</label>
+    <div id="AddNewRoom" class="row">
+      <div class="col-sm-offset-1 col-sm-7">
+      <form name="newLocationForm" class="form-horizontal" 
+            ng-controller="AddRoomController as addRoomCtrl"
+            ng-submit="addRoomCtrl.addNewRoom(voteCtrl.rooms)">
+        <div class="form-group">
+          <label for="link" class="col-sm-2 control-label">網址連結：</label>
+          <div class="col-sm-10">
+            <input type="url" class="form-control" ng-model="addRoomCtrl.newRoom.link" id="link" placeholder="link">
+          </div>
         </div>
 
-        <label>登記：</label>
-        <div>
-          <label class="radio-inline">
-            <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="true">可以</label>
-          <label class="radio-inline">
-            <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="false">不行</label>
-          <label class="radio-inline">
-            <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="undefined">未知</label>
+        <div class="form-group">
+          <label for="cost" class="col-sm-2 control-label">租金：</label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" ng-model="addRoomCtrl.newRoom.cost" id="cost" placeholder="number">
+          </div>
         </div>
-        <br />
-        <button type="submit" class="btn btn-sm btn-success">確認新增</button>
+
+        <div class="form-group">
+          <label for="traffic" class="col-sm-2 control-label">交通：</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" ng-model="addRoomCtrl.newRoom.traffic" id="traffic" placeholder="哪個捷運站附近">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">傢俱：</label>
+          <div class="col-sm-10">
+            <label class="radio-inline">
+              <input type="radio" id="bed1" ng-model="addRoomCtrl.newRoom.bed" value="true">有</label>
+            <label class="radio-inline">
+              <input type="radio" id="bed1" ng-model="addRoomCtrl.newRoom.bed" value="false">沒有</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">登記：</label>
+          <div class="col-sm-10">
+            <label class="radio-inline">
+              <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="true">可以</label>
+            <label class="radio-inline">
+              <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="false">不行</label>
+            <label class="radio-inline">
+              <input type="radio" ng-model="addRoomCtrl.newRoom.register" value="undefined">未知</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-sm btn-success">確認新增</button>
+          </div>
+        </div>
       </form>
+      </div>
     </div>
   </div>
 

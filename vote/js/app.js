@@ -8,14 +8,14 @@
     Parse.initialize("wvKilDh5ZK8ODgHaslQf7xBoiGnX2RWhMmC1GJfq", "fVd6fGuWnpkrGY2voBbS3jp8vDCmlplAKaPONWvX");
 
     var RoomObject = Parse.Object.extend("RoomObject");
-    var p_query = new Parse.Query(RoomObject);
-    var p_room = new RoomObject();
+    var gQuery = new Parse.Query(RoomObject);
+    var gRoom = new RoomObject();
 
     var ParseService = {
       name: "Parse",
 
       getRoomList : function getRoomList(callback){
-        p_room.fetch({
+        gRoom.fetch({
           success : function(data){
             var json = data.toJSON()
             // console.log(json.results);
@@ -48,14 +48,51 @@
       },
 
       countPoints: function countPoints(newPoint, room){
-        console.log("I am ParseService, newPoint = "+newPoint);
-        p_query.equalTo("traffic", room.traffic);
-        p_query.find({
+        gQuery.equalTo("traffic", room.traffic);
+        gQuery.find({
           success:function(room) {
             // list contains post liked by the current user which have the title "I'm Hungry".
             // console.log(room[0]);
             room[0].set("points", newPoint);
             room[0].save();
+          },
+          error : function(error) {
+            alert("Error: "+error.message);
+          }
+        });
+      },
+
+      updateOffice: function updateOffice(objectId, newTraffic){
+        gQuery.equalTo("objectId", objectId);
+        gQuery.find({
+          success: function(room){
+            room[0].set("traffic", newTraffic);
+            room[0].save();
+          },
+          error : function(error) {
+            alert("Error: "+error.message);
+          }
+        });
+      },
+
+      deleteOffice: function deleteOffice(link, callback) {
+        gQuery.equalTo("link", link);
+        gQuery.find({
+          success:function(room) {
+            // list contains post liked by the current user which have the title "I'm Hungry".
+            // console.log(room[0]);
+            room[0].destroy({
+              success: function(myObject) {
+                gRoom.fetch({
+                  success : function(data){ callback(data.toJSON().results); }
+                });
+                //callback(myObject.toJSON());
+                alert("Delete Success!!");
+              },
+              error: function(error) {
+                alert("Error: "+error.message);
+              }
+            });
           },
           error : function(error) {
             alert("Error: "+error.message);
@@ -86,26 +123,24 @@
 
 
   app.controller('VoteController', function($scope, ParseService){
-    $scope.orderProp = 'points';
-
     var voteCtrl = this;
     voteCtrl.rooms = [];
-    voteCtrl.orderPorp = 'points';
 
     // console.log($scope);
     ParseService.getRoomList(function(results){
       $scope.$apply(function() {
         voteCtrl.rooms = results;
+        // console.log(voteCtrl.rooms[0]);
       });
     });
 
-    this.canRegister = function(reg){
+    voteCtrl.canRegister = function(reg){
       if (reg === 'true') {  return "可以"; } 
       else if (reg === 'false') {  return "不行"; }
       else {  return "未知"; }
     };
-    
-    this.countPoints = function(vote, room){
+
+    voteCtrl.countPoints = function(vote, room){
       var newPoint = vote;
       if(room.points !== 0)
         newPoint = (vote + room.points)/2;
@@ -114,34 +149,53 @@
       room.points = newPoint;
     };
 
+    voteCtrl.delOffice = function(link) {
+      ParseService.deleteOffice(link, function(results){
+        $scope.$apply(function() {
+          voteCtrl.rooms = results;
+        });
+      });
+    };
+
+    voteCtrl.showEditTraffic = function(room) {
+      $('#showTraffic_'+room.objectId).hide();
+      $('#editTraffic_'+room.objectId).show();
+    };
+
+    voteCtrl.editTraffic = function(room, traffic){
+      // update room
+      console.log("new traffic = "+traffic);
+      ParseService.updateOffice(room.objectId, traffic);
+      room.traffic = traffic;
+
+      $('#editTraffic_'+room.objectId).hide();
+      $('#showTraffic_'+room.objectId).show();
+    }
+
+    $scope.orderProp = 'points';
     $scope.changeOrder = function(order) {
       if ($scope.orderProp === order){
         $scope.orderProp = '-'+order;
       } else {
         $scope.orderProp = order;
       }
-    }
+    };
 
     //$('#AddNewRoom').hide();
   });
 
-  var OfficeRooms = [
-    {
-      link: "http://www.google.com",
-      cost: 23000,
-      traffic: "信義安和站附近",
-      bed: false,
-      register: undefined,
-      points: 0
-    },
-    {
-      link: "http://www.591.com",
-      cost: 21000,
-      traffic: "中山國小站附近",
-      bed: true,
-      register: true,
-      points: 0
+
+function p(obj){
+  var output = '';
+  if (typeof(obj) === 'object'){
+    for (var property in object) {
+      output += property + ': ' + object[property]+'; ';
     }
-  ];
+  } else {
+    output = obj;
+  }
+
+  console.log(output);
+}
 
 })();
