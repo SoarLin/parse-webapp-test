@@ -19,16 +19,17 @@
         <thead>
           <tr>
             <td>連結</td>
-            <td>租金</td>
+            <td><button type="button" class="btn btn-sm btn-default" ng-click="changeOrder('cost')">租金</button></td>
             <td>交通</td>
             <td>傢俱</td>
             <td>登記</td>
-            <td>得分</td>
+            <td><button type="button" class="btn btn-sm btn-default" ng-click="changeOrder('points')">得分</button></td>
             <td>投票</td>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="room in voteCtrl.rooms">
+          <!-- {{voteCtrl.orderBy}} -->
+          <tr ng-repeat="room in voteCtrl.rooms | orderBy:orderProp">
             <td><a href="{{room.link}}" target="_blank">link</a></td>
             <td>{{room.cost}}</td>
             <td>{{room.traffic}}</td>

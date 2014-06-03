@@ -83,9 +83,13 @@
     };
   });
 
+
   app.controller('VoteController', function($scope, ParseService){
+    $scope.orderProp = 'points';
+
     var voteCtrl = this;
     voteCtrl.rooms = [];
+    voteCtrl.orderPorp = 'points';
 
     // console.log($scope);
     ParseService.getRoomList(function(results){
@@ -108,6 +112,14 @@
       ParseService.countPoints(newPoint, room);
       room.points = newPoint;
     };
+
+    $scope.changeOrder = function(order) {
+      if ($scope.orderProp === order){
+        $scope.orderProp = '-'+order;
+      } else {
+        $scope.orderProp = order;
+      }
+    }
 
     $('#AddNewRoom').hide();
   });
