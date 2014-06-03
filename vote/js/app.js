@@ -1,87 +1,6 @@
 //Parse JavaScript Key : fVd6fGuWnpkrGY2voBbS3jp8vDCmlplAKaPONWvX
 
 (function() {
-/*
-  Parse.initialize("wvKilDh5ZK8ODgHaslQf7xBoiGnX2RWhMmC1GJfq", "fVd6fGuWnpkrGY2voBbS3jp8vDCmlplAKaPONWvX");
-
-  var RoomObject = Parse.Object.extend("RoomObject");
-  var p_room = new RoomObject();
-  var p_query = new Parse.Query(RoomObject);
-  var p_data = {};
-
-  // $.fn.getRoomList = function(){
-  function getRoomList(){
-    p_room.fetch({
-      success : function(data){
-        p_data = data.toJSON();
-      },
-      error : function(roomObject, error){
-        alert("Error: "+error.description);
-      }
-    });
-  }
-
-  //getRoomList();
-  //console.log(p_data);
-
-  function saveToParse(newRoom){
-    p_room.set("link", newRoom.link);
-    p_room.set("cost", newRoom.cost);
-    p_room.set("bed", newRoom.bed);
-    p_room.set("register", newRoom.register);
-    p_room.set("points", newRoom.points);
-    p_room.save(null, {
-      success : function(room){
-        alert("save success! need to refresh table, room id = "+room.id);
-      },
-      error : function(room, error){
-        alert("Error: "+error.description);
-      }
-    });
-  };
-
-  var parse = angular.module('LocationVoteService', []);
-  parse.factory('ParseService', function(){
-    Parse.initialize("wvKilDh5ZK8ODgHaslQf7xBoiGnX2RWhMmC1GJfq", "fVd6fGuWnpkrGY2voBbS3jp8vDCmlplAKaPONWvX");
-
-    var RoomObject = Parse.Object.extend("RoomObject");
-    var p_room = new RoomObject();
-
-    var ParseService = {
-      name: "Parse",
-
-      getRoomList : function getRoomList(callback){
-        p_room.fetch({
-          success : function(data){
-            callback(data.toJSON());
-          },
-          error : function(error){
-            alert("Error: "+error.description);
-          }
-        });
-      },
-
-      saveToParse : function saveToParse(newRoom, callback){
-        p_room.set("link", newRoom.link);
-        p_room.set("cost", newRoom.cost);
-        p_room.set("bed", newRoom.bed);
-        p_room.set("register", newRoom.register);
-        p_room.set("points", newRoom.points);
-        p_room.save(null, {
-          success : function(room){
-            alert("save success! need to refresh table, room id = "+room.id);
-            //callback(room);
-          },
-          error : function(room, error){
-            alert("Error: "+error.description);
-          }
-        });
-      }
-    }
-
-    return ParseService;
-  });
-*/
 
   var app = angular.module('LocationVote', []);
 
@@ -190,6 +109,7 @@
       room.points = newPoint;
     };
 
+    $('#AddNewRoom').hide();
   });
 
   var OfficeRooms = [
@@ -210,4 +130,5 @@
       points: 0
     }
   ];
+
 })();
