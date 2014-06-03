@@ -28,13 +28,14 @@
       },
 
       saveToParse : function saveToParse(newRoom, callback){
-        p_room.set("link", newRoom.link);
-        p_room.set("cost", newRoom.cost);
-        p_room.set("traffic", newRoom.traffic);
-        p_room.set("bed", newRoom.bed);
-        p_room.set("register", newRoom.register);
-        p_room.set("points", newRoom.points);
-        p_room.save(null, {
+        var room = new RoomObject();
+        room.set("link", newRoom.link);
+        room.set("cost", newRoom.cost);
+        room.set("traffic", newRoom.traffic);
+        room.set("bed", newRoom.bed);
+        room.set("register", newRoom.register);
+        room.set("points", newRoom.points);
+        room.save(null, {
           success : function(room){
             //allRooms.push(newRoom);
             //alert("save success! need to refresh table, room id = "+room.id);
@@ -121,7 +122,7 @@
       }
     }
 
-    $('#AddNewRoom').hide();
+    //$('#AddNewRoom').hide();
   });
 
   var OfficeRooms = [
