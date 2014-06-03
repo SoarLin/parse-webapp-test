@@ -42,7 +42,7 @@
             <td>{{room.points}}</td>
             <td>
               <form name="voteForm" ng-submit="voteCtrl.countPoints(vote, room)" style="margin-bottom: 0px;">
-                <input type="number" ng-model="vote" style="width:30px">
+                <input type="number" ng-model="vote" style="width:30px" min=0 max=10>
                 <button type="submit" class="btn btn-xs btn-default" style="margin-top:-10px;">vote</button>
               </form>
             </td>
