@@ -16,6 +16,14 @@
 <body ng-app="LocationVote">
   <div class="container" ng-controller="VoteController as voteCtrl">
     <div id="RoomTable">
+      <form name="searchForm" class="form-horizontal" style="margin:10px">
+        <div class="form-group">
+          <label for="search_text" class="col-sm-1 control-label">搜尋</label>
+          <div class="col-sm-4">
+            <input type="text" id="search_text" class="form-control" ng-model="query">
+          </div>
+        </div>
+      </form>
       <table class="table table-condensed">
         <thead>
           <tr>
@@ -30,7 +38,7 @@
         </thead>
         <tbody>
           <!-- {{voteCtrl.orderBy}} -->
-          <tr ng-repeat="room in voteCtrl.rooms | orderBy:orderProp">
+          <tr ng-repeat="room in voteCtrl.rooms | filter:query |orderBy:orderProp">
             <td><a href="{{room.link}}" target="_blank">link</a></td>
             <td>{{room.cost}}</td>
             <td>
